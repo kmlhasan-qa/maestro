@@ -1,0 +1,56 @@
+appId: com.loopedhands
+name: Login and Submit Food Request
+tags:
+  - food-request
+  - smoke
+  - regression
+---
+- runFlow: login.yaml
+
+- extendedWaitUntil:
+    visible: "Welcome back.*"
+    timeout: 20000
+
+- tapOn: "Listings"
+- extendedWaitUntil:
+    visible: "Request Food"
+    timeout: 10000
+
+- tapOn: "Request Food"
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "Request Food"
+
+- evalScript: ${output.requestTitle = "Maestro food request test " + Date.now()}
+- tapOn: "What you looking for ?"
+- inputText: ${output.requestTitle}
+- tapOn: "Tell us more about your food listing"
+- inputText: "Automated test request. Please disregard."
+- hideKeyboard
+
+- tapOn: "Select Serving Size"
+- tapOn: "2 Servings"
+- tapOn: "Select suburb location"
+- tapOn: "Top Naas - Australian Capital Territory - 2620"
+- tapOn: "Home-Cooked"
+- scrollUntilVisible:
+    element:
+      text: "In 2-3 Days"
+    direction: DOWN
+- tapOn: "In 2-3 Days"
+- scrollUntilVisible:
+    element:
+      text: "Vegetarian"
+    direction: DOWN
+- tapOn: "Vegetarian"
+- assertVisible: "In 2-3 Days"
+- assertVisible: "Vegetarian"
+
+- tapOn: "Post Request"
+- extendedWaitUntil:
+    visible: "Post Now"
+    timeout: 5000
+- tapOn: "Post Now"
+- extendedWaitUntil:
+    visible: "Post created successfully!"
+    timeout: 15000

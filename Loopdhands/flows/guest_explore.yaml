@@ -1,0 +1,119 @@
+appId: com.loopedhands
+name: Guest User Exploration
+tags:
+  - guest
+  - smoke
+  - regression
+---
+# Scenario: first-time visitor browses Loopd Hands without an account.
+# Checks what a guest can see and where the app asks them to sign in.
+
+# 0. Fresh start on the Sign in screen
+- launchApp:
+    clearState: true
+
+# First run after clearState shows the onboarding carousel; skip it if present
+- extendedWaitUntil:
+    visible: "Skip"
+    timeout: 10000
+    optional: true
+- runFlow:
+    when:
+      visible: "Skip"
+    commands:
+      - tapOn: "Skip"
+      - extendedWaitUntil:
+          visible: "Get Started"
+          timeout: 5000
+      - tapOn: "Get Started"
+- extendedWaitUntil:
+    visible: "Continue as Guest"
+    timeout: 15000
+
+# 1. Continue as Guest
+# Note: no hideKeyboard here. On Android it sends Back when no keyboard is open,
+# which exits the app. The button sits above the keyboard, so it is not needed.
+- tapOn: "Continue as Guest"
+
+# 2. Home loads (allow time for the screen transition)
+- extendedWaitUntil:
+    visible: "Welcome back, Guest"
+    timeout: 15000
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "Hello!"
+- assertVisible: "Categories"
+- assertVisible: "Latest Listings"
+- assertVisible: "Home-Cooked"
+- assertVisible: "Frozen Meals"
+- assertVisible: "Takeaway"
+- assertVisible: "Packaged Foods"
+
+# 3. Category filter
+- tapOn: "Frozen Meals"
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "Latest Listings"
+
+# 4. Listings tab
+- tapOn: "Listings"
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "Request Food"
+- assertVisible: "Post Food"
+- assertVisible: "Personal"
+- assertVisible: "Corporate"
+
+# 5. Corporate tab (empty state expected)
+- tapOn: "Corporate"
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "No results found"
+
+# 6. Post Food is gated for guests
+- tapOn: "Post Food"
+- extendedWaitUntil:
+    visible: ".*Full Experience.*"
+    timeout: 5000
+- assertVisible: "Sign In"
+- assertVisible: "Cancel"
+
+# 7. Cancel returns to Listings
+- tapOn: "Cancel"
+- assertNotVisible: ".*Full Experience.*"
+- assertVisible: "Post Food"
+
+# 8. Profile tab shows the guest identity and menu
+- tapOn: "Profile"
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "Guest User"
+- assertVisible: "Account Management"
+- assertVisible: "My Listings"
+- assertVisible: "My Orders"
+- assertVisible: "FAQs"
+- assertVisible: "About Us"
+- assertVisible: "Contact Us"
+- assertVisible: "Privacy Policy"
+- assertVisible: "Terms and Conditions"
+
+# 9. FAQs are open to guests
+- tapOn: "FAQs"
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: "FAQ"
+- tapOn: "Who can receive food?"
+- assertVisible: "Anyone in need of food, no matter their circumstances."
+
+# 10. My Orders is gated for guests
+- back
+- assertVisible: "My Orders"
+- tapOn: "My Orders"
+- extendedWaitUntil:
+    visible: ".*Full Experience.*"
+    timeout: 5000
+
+# 11. Cancel returns to Profile
+- tapOn: "Cancel"
+- assertNotVisible: ".*Full Experience.*"
+- assertVisible: "Guest User"

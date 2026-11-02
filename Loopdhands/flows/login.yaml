@@ -1,0 +1,64 @@
+appId: com.loopedhands
+name: Login with email OTP (MailSlurp)
+tags:
+  - login
+# Required env (pass via run.sh or `maestro test -e`):
+#   EMAIL, PASSWORD, MAILSLURP_API_KEY
+# Optional: MAILSLURP_INBOX_ID
+---
+- launchApp:
+    clearState: true
+    stopApp: true
+
+# Onboarding (only shown on fresh install)
+- tapOn: "Skip"
+- tapOn: "Get Started"
+
+# Sign-in screen
+- tapOn: "Enter your email"
+- inputText: ${EMAIL}
+- tapOn: "Enter your password"
+- inputText: ${PASSWORD}
+- hideKeyboard
+
+# Only accept OTP emails that arrive after this moment
+- evalScript: ${output.otpSince = new Date(Date.now() - 5000).toISOString()}
+
+# index: 1 = the button (index 0 is the "Sign in" heading; text match ignores case)
+- tapOn:
+    text: "Sign In"
+    index: 1
+
+- extendedWaitUntil:
+    visible: "OTP Verification"
+    timeout: 15000
+
+# Fetch the OTP from MailSlurp
+- runScript:
+    file: ../scripts/getOtp.js
+    env:
+      OTP_SINCE: ${output.otpSince}
+
+# Enter OTP (first box is auto-focused; tap it to be safe)
+- tapOn:
+    point: "16%,47%"
+- evalScript: ${output.otpDigit1 = output.otp.substring(0, 1)}
+- evalScript: ${output.otpDigit2 = output.otp.substring(1, 2)}
+- evalScript: ${output.otpDigit3 = output.otp.substring(2, 3)}
+- evalScript: ${output.otpDigit4 = output.otp.substring(3, 4)}
+- evalScript: ${output.otpDigit5 = output.otp.substring(4, 5)}
+- inputText: ${output.otpDigit1}
+- inputText: ${output.otpDigit2}
+- inputText: ${output.otpDigit3}
+- inputText: ${output.otpDigit4}
+- inputText: ${output.otpDigit5}
+
+# OTP submits automatically after the fifth digit.
+- extendedWaitUntil:
+    visible: "Sign in Success!"
+    timeout: 20000
+- tapOn: "Continue to Homepage"
+- extendedWaitUntil:
+    visible: "Welcome back.*"
+    timeout: 20000
+- assertVisible: "Hello!"
