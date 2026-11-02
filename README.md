@@ -5,6 +5,11 @@ This repository contains separate Maestro test projects:
 - `Loopdhands/` — existing Loopdhands flows, scripts, credentials, and logs.
 - `Still-Aware/` — flows, scripts, and logs for Still Aware.
 
+Setup guides:
+
+- [macOS](./SETUP-MAC.md)
+- [Windows](./SETUP-WINDOWS.md)
+
 Run flows from the repository root:
 
 ```sh
