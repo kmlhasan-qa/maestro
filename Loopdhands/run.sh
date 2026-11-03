@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: ./run.sh [all|flows/<flow>.yaml]
+# Usage: ./run.sh [all (excludes login)|flows/<flow>.yaml]
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -12,7 +12,9 @@ fi
 
 if [[ "$TARGET" == "all" ]]; then
   TEST_TARGET="$DIR/flows"
+  TEST_OPTIONS=(--exclude-tags login)
 else
+  TEST_OPTIONS=()
   if [[ "$TARGET" = /* ]]; then
     TEST_TARGET="$TARGET"
   else
@@ -46,6 +48,7 @@ LOG_FILE="$LOG_DIR/maestro-$(date '+%Y%m%d-%H%M%S')-$$.log"
 
 set +e
 maestro test \
+  ${TEST_OPTIONS[@]+"${TEST_OPTIONS[@]}"} \
   -e MAILSLURP_API_KEY="$MAILSLURP_API_KEY" \
   -e EMAIL="$EMAIL" \
   -e PASSWORD="$PASSWORD" \

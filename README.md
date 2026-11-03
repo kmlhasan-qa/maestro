@@ -17,6 +17,10 @@ Run flows from the repository root:
 ./run.sh still-aware
 ```
 
+The Loopdhands default run excludes the standalone `login.yaml` scenario;
+other flows can still run login as a prerequisite. To run login by itself,
+target it explicitly with `./run.sh loopdhands flows/login.yaml`.
+
 To run one flow, pass its path relative to the selected project:
 
 ```sh

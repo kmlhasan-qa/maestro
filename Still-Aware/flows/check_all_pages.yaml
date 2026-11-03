@@ -1,0 +1,186 @@
+url: https://stillaware.itmanage.com.au/
+name: Check Still Aware sitemap pages
+tags:
+  - web
+  - smoke
+  - regression
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Be Still. Be Aware."
+    timeout: 15000
+
+- openLink: https://stillaware.itmanage.com.au/privacy-policy
+- extendedWaitUntil:
+    visible: "Privacy Policy"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/corporate-partners
+- extendedWaitUntil:
+    visible: "Corporate Partners"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/our-story
+- extendedWaitUntil:
+    visible: "Our Story"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/meet-the-team
+- extendedWaitUntil:
+    visible: "Meet the Team"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/work-with-us
+- extendedWaitUntil:
+    visible: "Work With Us"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/contact-us
+- extendedWaitUntil:
+    visible: "Contact Us"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/find-support
+- extendedWaitUntil:
+    visible: "Finding Support"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/donate-a-christmas-wreaths
+- extendedWaitUntil:
+    visible: "Still Aware Christmas Wreaths"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/stories-of-remembrance
+- extendedWaitUntil:
+    visible: "Give your baby a voice"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/gift-a-hand-heart
+- extendedWaitUntil:
+    visible: "Gift a Hand Heart"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/supporting-a-loved-one
+- extendedWaitUntil:
+    visible: "Supporting a Loved One"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/what-is-stillbirth
+- extendedWaitUntil:
+    visible: "What is Stillbirth?"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/cald-resources
+- extendedWaitUntil:
+    visible: "Culturally and Linguistically Diverse (CALD) Resources"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/stories-of-hope
+- extendedWaitUntil:
+    visible: "Stories of Hope"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/research-and-evidence
+- extendedWaitUntil:
+    visible: "Research and Evidence"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/workshop
+- extendedWaitUntil:
+    visible: "Clinician Workshops"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/understanding-risk-factors
+- extendedWaitUntil:
+    visible: "Understanding Risk Factors"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/membership
+- extendedWaitUntil:
+    visible: "Become a Still Aware Member"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/events
+- extendedWaitUntil:
+    visible: "Our Events"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/partner-with-us
+- extendedWaitUntil:
+    visible: "Partner With Still Aware"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/become-a-regular-giver
+- extendedWaitUntil:
+    visible: "Become a Regular Giver"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/host-your-own-fundraiser
+- extendedWaitUntil:
+    visible: "Host Your Own Fundraiser"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/donate
+- extendedWaitUntil:
+    visible: "Make a Difference Today"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/english
+- extendedWaitUntil:
+    visible: "Your Pregnancy"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/safe-bubba
+- extendedWaitUntil:
+    visible: "Working with Indigenous Nations WINDS Project"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/daily-actions
+- extendedWaitUntil:
+    visible: "Daily Actions for a Safer Pregnancy"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/i-am-expecting
+- extendedWaitUntil:
+    visible: "I Am Expecting"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/for-partners-and-family
+- extendedWaitUntil:
+    visible: "For Partners & Family"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/common-myth
+- extendedWaitUntil:
+    visible: "Common Pregnancy Myths"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/tracking-your-pregnancy
+- extendedWaitUntil:
+    visible: "Tracking Your Pregnancy"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/qa-test-sa-800
+- extendedWaitUntil:
+    visible: "Quick Links"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/teams/head-office
+- extendedWaitUntil:
+    visible: "Head Office"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/teams/board-of-directors
+- extendedWaitUntil:
+    visible: "Board of Directors"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/teams/clinical-advisory-committee
+- extendedWaitUntil:
+    visible: "Clinical Advisory Committee"
+    timeout: 10000
+
+- openLink: https://stillaware.itmanage.com.au/teams/consumer-advisory-committee
+- extendedWaitUntil:
+    visible: "Consumer Advisory Committee"
+    timeout: 10000

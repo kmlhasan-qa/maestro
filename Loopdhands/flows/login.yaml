@@ -11,13 +11,21 @@ tags:
     stopApp: true
 
 # Onboarding (only shown on fresh install)
-- tapOn: "Skip"
-- tapOn: "Get Started"
+- tapOn:
+    text: "Skip"
+    waitToSettleTimeoutMs: 500
+- tapOn:
+    text: "Get Started"
+    waitToSettleTimeoutMs: 500
 
 # Sign-in screen
-- tapOn: "Enter your email"
+- tapOn:
+    text: "Enter your email"
+    waitToSettleTimeoutMs: 500
 - inputText: ${EMAIL}
-- tapOn: "Enter your password"
+- tapOn:
+    text: "Enter your password"
+    waitToSettleTimeoutMs: 500
 - inputText: ${PASSWORD}
 - hideKeyboard
 
@@ -28,6 +36,7 @@ tags:
 - tapOn:
     text: "Sign In"
     index: 1
+    waitToSettleTimeoutMs: 500
 
 - extendedWaitUntil:
     visible: "OTP Verification"
@@ -39,25 +48,45 @@ tags:
     env:
       OTP_SINCE: ${output.otpSince}
 
-# Enter OTP (first box is auto-focused; tap it to be safe)
-- tapOn:
-    point: "16%,47%"
+# Enter one digit in each of the five separate OTP fields.
 - evalScript: ${output.otpDigit1 = output.otp.substring(0, 1)}
 - evalScript: ${output.otpDigit2 = output.otp.substring(1, 2)}
 - evalScript: ${output.otpDigit3 = output.otp.substring(2, 3)}
 - evalScript: ${output.otpDigit4 = output.otp.substring(3, 4)}
 - evalScript: ${output.otpDigit5 = output.otp.substring(4, 5)}
+- tapOn:
+    id: otp-input
+    index: 0
+    waitToSettleTimeoutMs: 500
 - inputText: ${output.otpDigit1}
+- tapOn:
+    id: otp-input
+    index: 1
+    waitToSettleTimeoutMs: 500
 - inputText: ${output.otpDigit2}
+- tapOn:
+    id: otp-input
+    index: 2
+    waitToSettleTimeoutMs: 500
 - inputText: ${output.otpDigit3}
+- tapOn:
+    id: otp-input
+    index: 3
+    waitToSettleTimeoutMs: 500
 - inputText: ${output.otpDigit4}
+- tapOn:
+    id: otp-input
+    index: 4
+    waitToSettleTimeoutMs: 500
 - inputText: ${output.otpDigit5}
 
 # OTP submits automatically after the fifth digit.
 - extendedWaitUntil:
     visible: "Sign in Success!"
     timeout: 20000
-- tapOn: "Continue to Homepage"
+- tapOn:
+    text: "Continue to Homepage"
+    waitToSettleTimeoutMs: 500
 - extendedWaitUntil:
     visible: "Welcome back.*"
     timeout: 20000
