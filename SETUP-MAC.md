@@ -148,9 +148,10 @@ maestro test flows/smoke.yaml
 maestro test OtherProject/flows
 ```
 
-The repo's `./run.sh` is a convenience wrapper only for its `loopdhands` and
-`still-aware` sample projects. For another app, use `maestro test` directly.
-Use `maestro hierarchy` to inspect UI selectors when a flow does not match.
+The repo's `./run.sh` can run any project folder that provides a `run.sh`
+runner, including `loopdhands` and `still-aware`. For another app without a
+project runner, use `maestro test` directly. Use `maestro hierarchy` to inspect
+UI selectors when a flow does not match.
 
 ## Loopdhands sample only
 

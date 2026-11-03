@@ -129,10 +129,10 @@ maestro test flows/smoke.yaml
 maestro test OtherProject/flows
 ```
 
-The repo's `run.sh` is a Bash convenience wrapper for its `loopdhands` and
-`still-aware` sample projects. You can run it from Git Bash; otherwise, use
-the direct `maestro test` commands above. For UI selectors, use
-`maestro hierarchy` to inspect the running app.
+The repo's `run.sh` can run any project folder that provides a `run.sh`
+runner, including `loopdhands` and `still-aware`. Run it from Git Bash;
+otherwise, use the direct `maestro test` commands above. For UI selectors,
+use `maestro hierarchy` to inspect the running app.
 
 ## Loopdhands sample only
 
