@@ -11,12 +11,16 @@ tags:
     visible: "Welcome back.*"
     timeout: 20000
 
-- tapOn: "Listings"
+- tapOn:
+    text: "Listings"
+    waitToSettleTimeoutMs: 500
 - extendedWaitUntil:
     visible: "Request Food"
     timeout: 10000
 
-- tapOn: "Request Food"
+- tapOn:
+    text: "Request Food"
+    waitToSettleTimeoutMs: 500
 - waitForAnimationToEnd:
     timeout: 5000
 - assertVisible: "Request Food"
@@ -25,32 +29,52 @@ tags:
 - tapOn: "What you looking for ?"
 - inputText: ${output.requestTitle}
 - tapOn: "Tell us more about your food listing"
-- inputText: "Automated test request. Please disregard."
+- inputText: "Automated test."
 - hideKeyboard
 
-- tapOn: "Select Serving Size"
-- tapOn: "2 Servings"
-- tapOn: "Select suburb location"
-- tapOn: "Top Naas - Australian Capital Territory - 2620"
-- tapOn: "Home-Cooked"
+- tapOn:
+    text: "Select Serving Size"
+    waitToSettleTimeoutMs: 500
+- tapOn:
+    text: "2 Servings"
+    waitToSettleTimeoutMs: 500
+- tapOn:
+    text: "Select suburb location"
+    waitToSettleTimeoutMs: 500
+- tapOn:
+    text: "^.+ - .+ - [0-9]{4}$"
+    index: 0
+    waitToSettleTimeoutMs: 500
+- assertVisible: "^.+ - .+ - [0-9]{4}$"
+- tapOn:
+    text: "Home-Cooked"
+    waitToSettleTimeoutMs: 500
 - scrollUntilVisible:
     element:
       text: "In 2-3 Days"
     direction: DOWN
-- tapOn: "In 2-3 Days"
+- tapOn:
+    text: "In 2-3 Days"
+    waitToSettleTimeoutMs: 500
 - scrollUntilVisible:
     element:
       text: "Vegetarian"
     direction: DOWN
-- tapOn: "Vegetarian"
+- tapOn:
+    text: "Vegetarian"
+    waitToSettleTimeoutMs: 500
 - assertVisible: "In 2-3 Days"
 - assertVisible: "Vegetarian"
 
-- tapOn: "Post Request"
+- tapOn:
+    text: "Post Request"
+    waitToSettleTimeoutMs: 500
 - extendedWaitUntil:
     visible: "Post Now"
     timeout: 5000
-- tapOn: "Post Now"
+- tapOn:
+    text: "Post Now"
+    waitToSettleTimeoutMs: 500
 - extendedWaitUntil:
     visible: "Post created successfully!"
     timeout: 15000

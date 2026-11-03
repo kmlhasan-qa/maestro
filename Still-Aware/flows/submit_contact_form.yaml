@@ -1,0 +1,37 @@
+url: https://stillaware.itmanage.com.au/contact-us
+name: Submit Still Aware Contact Form
+tags:
+  - forms
+  - submission
+  - smoke
+---
+- launchApp
+- scrollUntilVisible:
+    element:
+      text: "Send Us a Message"
+    direction: DOWN
+- extendedWaitUntil:
+    visible: "Send Us a Message"
+    timeout: 20000
+
+- tapOn: "Enter Name"
+- inputText: "Maestro QA Test"
+- tapOn: "Enter Email Address"
+- inputText: "automation-test@example.com"
+- tapOn: "Enter Phone Number"
+- inputText: "0491570006"
+- hideKeyboard
+- scrollUntilVisible:
+    element:
+      text: "Choose subject"
+    direction: DOWN
+- tapOn: "Choose subject"
+- tapOn: "Volunteering"
+- assertVisible: "Volunteering"
+- tapOn: "Enter any other comments or feedback"
+- inputText: "AUTOMATED QA TEST - please disregard. Testing the Contact Us form only; no response required."
+
+- tapOn: "Send Message"
+- extendedWaitUntil:
+    visible: "Enter Name"
+    timeout: 15000
