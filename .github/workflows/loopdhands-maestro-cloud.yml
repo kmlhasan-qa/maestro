@@ -42,15 +42,20 @@ jobs:
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
       - name: Run flows on Maestro Cloud
+        id: cloud-run
+        continue-on-error: true
         env:
           MAESTRO_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
-          MAESTRO_PROJECT_ID: ${{ secrets.LOOPDHANDS_MAESTRO_PROJECT_ID }}
-          MAILSLURP_API_KEY: ${{ secrets.MAILSLURP_API_KEY }}
+          MAESTRO_PROJECT_ID: ${{ secrets.MAESTRO_PROJECT_ID }}
+          MAILSLURP_API_KEY: ${{ secrets.LOOPDHANDS_MAILSLURP_API_KEY }}
           EMAIL: ${{ secrets.LOOPDHANDS_EMAIL }}
           PASSWORD: ${{ secrets.LOOPDHANDS_PASSWORD }}
-          MAILSLURP_INBOX_ID: ${{ secrets.MAILSLURP_INBOX_ID }}
+          MAILSLURP_INBOX_ID: ${{ secrets.LOOPDHANDS_MAILSLURP_INBOX_ID }}
           APP_FILE: ${{ runner.temp }}/loopdhands-2.6-staging.apk
+          CLOUD_LOG: ${{ runner.temp }}/maestro-cloud.log
         run: |
+          echo "started_at=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> "$GITHUB_OUTPUT"
+
           for name in MAESTRO_API_KEY MAESTRO_PROJECT_ID MAILSLURP_API_KEY EMAIL PASSWORD; do
             if [[ -z "${!name:-}" ]]; then
               printf 'Missing required GitHub Actions secret for %s\n' "$name" >&2
@@ -68,4 +73,66 @@ jobs:
             -e EMAIL="$EMAIL" \
             -e PASSWORD="$PASSWORD" \
             -e MAILSLURP_API_KEY="$MAILSLURP_API_KEY" \
-            -e MAILSLURP_INBOX_ID="${MAILSLURP_INBOX_ID:-}"
+            -e MAILSLURP_INBOX_ID="${MAILSLURP_INBOX_ID:-}" \
+            2>&1 | tee "$CLOUD_LOG"
+          cloud_status="${PIPESTATUS[0]}"
+          echo "status=$cloud_status" >> "$GITHUB_OUTPUT"
+          exit "$cloud_status"
+
+      - name: Send run report to Microsoft Teams
+        if: always()
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          CLOUD_OUTCOME: ${{ steps.cloud-run.outcome }}
+          RUN_STARTED_AT: ${{ steps.cloud-run.outputs.started_at }}
+          CLOUD_LOG: ${{ runner.temp }}/maestro-cloud.log
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}
+        run: |
+          if [[ -z "$TEAMS_WEBHOOK_URL" ]]; then
+            echo "Missing GitHub Actions secret: TEAMS_WEBHOOK_URL" >&2
+            exit 1
+          fi
+
+          python3 - <<'PY' > "$RUNNER_TEMP/teams-payload.json"
+          import json
+          import os
+          import re
+
+          outcome = os.environ.get("CLOUD_OUTCOME", "skipped")
+          passed = outcome == "success"
+          status = "PASS" if passed else "FAIL"
+          console_url = ""
+          try:
+              with open(os.environ["CLOUD_LOG"], encoding="utf-8", errors="replace") as log:
+                  match = re.search(r"https://app\.maestro\.dev/\S+", log.read())
+                  if match:
+                      console_url = match.group(0).rstrip(".,)")
+          except FileNotFoundError:
+              pass
+
+          lines = [
+              f"Loopdhands Maestro Cloud run started: {os.environ.get('RUN_STARTED_AT', 'unknown')}",
+              f"{status} | Loopdhands Maestro Cloud",
+              f"Summary: {1 if passed else 0} passed, {0 if passed else 1} failed",
+              f"GitHub Actions: {os.environ['RUN_URL']}",
+          ]
+          if console_url:
+              lines.append(f"Maestro Cloud: {console_url}")
+
+          card = {
+              "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+              "type": "AdaptiveCard",
+              "version": "1.2",
+              "body": [{"type": "TextBlock", "text": "\n".join(lines), "wrap": True}],
+          }
+          print(json.dumps(card))
+          PY
+
+          curl --silent --show-error --fail-with-body --max-time 20 \
+            -H 'Content-Type: application/json' \
+            --data-binary @"$RUNNER_TEMP/teams-payload.json" \
+            "$TEAMS_WEBHOOK_URL"
+
+      - name: Fail workflow if Maestro Cloud failed
+        if: steps.cloud-run.outcome != 'success'
+        run: exit 1

@@ -16,18 +16,17 @@ if [[ -f "$ROOT_DIR/.env" ]]; then
   set +a
 fi
 
-if [[ -f "$DIR/.env" ]]; then
-  set -a
-  source "$DIR/.env"
-  set +a
-fi
+MAILSLURP_API_KEY="${LOOPDHANDS_MAILSLURP_API_KEY:-}"
+EMAIL="${LOOPDHANDS_EMAIL:-}"
+PASSWORD="${LOOPDHANDS_PASSWORD:-}"
+MAILSLURP_INBOX_ID="${LOOPDHANDS_MAILSLURP_INBOX_ID:-}"
 
 APP_FILE="${LOOPDHANDS_APP_FILE:-$DIR/build/outputs/apk/loopdhands-2.6-staging.apk}"
 if [[ "$APP_FILE" != /* ]]; then
   APP_FILE="$ROOT_DIR/$APP_FILE"
 fi
 
-for name in MAESTRO_API_KEY LOOPDHANDS_MAESTRO_PROJECT_ID MAILSLURP_API_KEY EMAIL PASSWORD; do
+for name in MAESTRO_API_KEY MAESTRO_PROJECT_ID MAILSLURP_API_KEY EMAIL PASSWORD; do
   if [[ -z "${!name:-}" ]]; then
     printf 'Missing required value for Maestro Cloud: %s\n' "$name" >&2
     exit 1
@@ -63,7 +62,7 @@ LOG_FILE="$LOG_DIR/maestro-cloud-$(date '+%Y%m%d-%H%M%S')-$$.log"
 set +e
 maestro cloud \
   --api-key "$MAESTRO_API_KEY" \
-  --project-id "$LOOPDHANDS_MAESTRO_PROJECT_ID" \
+  --project-id "$MAESTRO_PROJECT_ID" \
   --app-file "$APP_FILE" \
   --flows "$FLOWS_DIR" \
   ${FLOW_OPTIONS[@]+"${FLOW_OPTIONS[@]}"} \

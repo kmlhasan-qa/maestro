@@ -32,12 +32,15 @@ prerequisite. To run one flow instead:
 ./run.sh loopdhands cloud flows/food_request.yaml
 ```
 
-The root `.env` must contain `MAESTRO_API_KEY`,
-`LOOPDHANDS_MAESTRO_PROJECT_ID`, and `LOOPDHANDS_APP_FILE`. The Project ID and
-APK path are already configured locally. Add a newly rotated Maestro API key
-to `.env`; do not commit or paste it into chat. Maestro Cloud requires a Cloud
-plan and uploads the APK, selected flows, and flow environment variables to
-Maestro. Use dedicated test credentials for Cloud runs.
+The repository-root `.env` holds shared settings and Loopdhands credentials:
+`MAESTRO_API_KEY`, `MAESTRO_PROJECT_ID`, `LOOPDHANDS_APP_FILE`,
+`LOOPDHANDS_MAILSLURP_API_KEY`, `LOOPDHANDS_EMAIL`,
+`LOOPDHANDS_PASSWORD`, and optional `LOOPDHANDS_MAILSLURP_INBOX_ID`.
+This is the only local environment file used by the project runners. Keep it
+private and ignored by Git; do not commit or paste secrets into chat. Maestro
+Cloud requires a Cloud plan and uploads the APK, selected flows, and flow
+environment variables to Maestro. Use dedicated test credentials for Cloud
+runs.
 
 ## Run Loopdhands in Maestro Cloud from GitHub Actions
 
@@ -46,17 +49,19 @@ The manually triggered workflow is
 
 1. Add `loopdhands-2.6-staging.apk` as an asset to a **private GitHub Release**.
 2. In repository **Settings > Secrets and variables > Actions**, add these
-   secrets: `MAESTRO_API_KEY`, `LOOPDHANDS_MAESTRO_PROJECT_ID`,
-   `MAILSLURP_API_KEY`, `LOOPDHANDS_EMAIL`, and `LOOPDHANDS_PASSWORD`.
-   `MAILSLURP_INBOX_ID` is optional.
+   secrets: `MAESTRO_API_KEY`, `MAESTRO_PROJECT_ID`,
+   `LOOPDHANDS_MAILSLURP_API_KEY`, `LOOPDHANDS_EMAIL`,
+   `LOOPDHANDS_PASSWORD`, `LOOPDHANDS_MAILSLURP_INBOX_ID`, and
+   `TEAMS_WEBHOOK_URL`. The inbox ID is optional.
 3. Open **Actions > Loopdhands Maestro Cloud > Run workflow**, enter the
    release tag containing the APK, and run it.
 
 The workflow downloads the APK from that release, runs all Loopdhands flows
 except the separately tagged login flow, and uses the login flow when another
 flow invokes it as a prerequisite. Results and the Maestro Console link appear
-in the GitHub Actions log. Maestro Cloud execution requires an active Cloud
-plan.
+in the GitHub Actions log. It also sends a pass/fail summary and run links to
+Teams, including when a Cloud run fails. Maestro Cloud execution requires an
+active Cloud plan.
 
 To send a run report for any selected project to Teams, create a Teams Workflow
 using **When a Teams webhook request is received**, configure it to post the
@@ -94,5 +99,4 @@ To run one flow, pass its path relative to the selected project:
 ```
 
 For compatibility, `./run.sh` and `./run.sh flows/login.yaml` continue to run
-Loopdhands flows. Loopdhands credentials stay in `Loopdhands/.env`; `.env`
-files and generated logs are excluded from Git.
+Loopdhands flows. `.env` files and generated logs are excluded from Git.

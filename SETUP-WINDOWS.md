@@ -140,23 +140,24 @@ The sample login flow requires test account values and a MailSlurp API key.
 To run its shell wrapper, use Git Bash from the repository root:
 
 ```sh
-cp Loopdhands/.env.example Loopdhands/.env
+if [ ! -f .env ]; then cp .env.example .env; fi
 ```
 
-Fill in the test values supplied by the Loopdhands team. `.env` is ignored by
-Git; do not commit or share it.
+Fill in the test values supplied by the Loopdhands team. The root `.env`
+stores settings shared across projects and is ignored by Git; do not commit or
+share it.
 
 Alternatively, run a sample flow directly in PowerShell and pass the required
 environment values:
 
 ```powershell
-$env:EMAIL = "your-test-email"
-$env:PASSWORD = "your-test-password"
-$env:MAILSLURP_API_KEY = "your-mailslurp-api-key"
-$env:MAILSLURP_INBOX_ID = ""
-maestro test -e "EMAIL=$env:EMAIL" -e "PASSWORD=$env:PASSWORD" `
-  -e "MAILSLURP_API_KEY=$env:MAILSLURP_API_KEY" `
-  -e "MAILSLURP_INBOX_ID=$env:MAILSLURP_INBOX_ID" `
+$env:LOOPDHANDS_EMAIL = "your-test-email"
+$env:LOOPDHANDS_PASSWORD = "your-test-password"
+$env:LOOPDHANDS_MAILSLURP_API_KEY = "your-mailslurp-api-key"
+$env:LOOPDHANDS_MAILSLURP_INBOX_ID = ""
+maestro test -e "EMAIL=$env:LOOPDHANDS_EMAIL" -e "PASSWORD=$env:LOOPDHANDS_PASSWORD" `
+  -e "MAILSLURP_API_KEY=$env:LOOPDHANDS_MAILSLURP_API_KEY" `
+  -e "MAILSLURP_INBOX_ID=$env:LOOPDHANDS_MAILSLURP_INBOX_ID" `
   Loopdhands/flows/login.yaml
 ```
 

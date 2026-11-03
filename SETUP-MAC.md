@@ -159,13 +159,13 @@ The sample login flow requires test account values and a MailSlurp API key.
 From the repository root, create the local environment file:
 
 ```sh
-cp Loopdhands/.env.example Loopdhands/.env
-chmod 600 Loopdhands/.env
+if [ ! -f .env ]; then cp .env.example .env; fi
+chmod 600 .env
 ```
 
-Fill in values supplied by the Loopdhands test environment. `.env` is ignored
-by Git; do not commit or share it. These values are not needed for unrelated
-apps or flows.
+Fill in the Loopdhands values supplied by the test environment. The root
+`.env` also stores shared Maestro Cloud and Teams settings. It is ignored by
+Git; do not commit or share it.
 
 Run the sample login or food-request flow:
 

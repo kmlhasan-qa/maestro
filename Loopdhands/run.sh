@@ -3,6 +3,7 @@
 set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$DIR/.." && pwd)"
 TARGET="${1:-all}"
 
 if [[ "$TARGET" == "cloud" ]]; then
@@ -36,14 +37,19 @@ else
   fi
 fi
 
-if [[ ! -f "$DIR/.env" ]]; then
-  printf 'Missing %s (copy .env.example and configure it)\n' "$DIR/.env" >&2
+if [[ ! -f "$ROOT_DIR/.env" ]]; then
+  printf 'Missing %s (copy .env.example and configure it)\n' "$ROOT_DIR/.env" >&2
   exit 1
 fi
 
 set -a
-source "$DIR/.env"
+source "$ROOT_DIR/.env"
 set +a
+
+MAILSLURP_API_KEY="${LOOPDHANDS_MAILSLURP_API_KEY:-}"
+EMAIL="${LOOPDHANDS_EMAIL:-}"
+PASSWORD="${LOOPDHANDS_PASSWORD:-}"
+MAILSLURP_INBOX_ID="${LOOPDHANDS_MAILSLURP_INBOX_ID:-}"
 
 for name in MAILSLURP_API_KEY EMAIL PASSWORD; do
   if [[ -z "${!name:-}" ]]; then
