@@ -64,21 +64,34 @@ import sys
 
 project_name, target, run_started, status, report_path = sys.argv[1:]
 results = []
+flow_results = []
 with open(report_path, encoding="utf-8", errors="replace") as report_file:
     for line in report_file:
+        line = line.rstrip()
         match = re.match(r"^(PASS|FAIL) \| ([^|]+)", line)
         if match:
             results.append(f"{match.group(1)} | {match.group(2).strip()}")
+        if re.match(r"^\[(Passed|Failed)\]\s+.+\s+\([^)]+\)(?:\s+\(.*\))?$", line):
+            flow_results.append(line)
 
-if not results:
+if flow_results:
+    passed = sum(result.startswith("[Passed] ") for result in flow_results)
+    failed = sum(result.startswith("[Failed] ") for result in flow_results)
+    print(f"{'PASS' if status == '0' else 'FAIL'} | {project_name}")
+    print("\n".join(flow_results))
+elif not results:
     result = "PASS" if status == "0" else "FAIL"
     scenario = os.path.splitext(os.path.basename(target))[0] if target.startswith("flows/") else project_name
     results.append(f"{result} | {scenario}")
-
-passed = sum(result.startswith("PASS | ") for result in results)
-failed = len(results) - passed
-print(run_started)
-print("\n".join(results))
+    passed = int(status == "0")
+    failed = int(status != "0")
+    print(run_started)
+    print("\n".join(results))
+else:
+    passed = sum(result.startswith("PASS | ") for result in results)
+    failed = len(results) - passed
+    print(run_started)
+    print("\n".join(results))
 print(f"\nSummary: {passed} passed, {failed} failed")
 PY
 )"

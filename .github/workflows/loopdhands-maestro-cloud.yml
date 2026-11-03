@@ -54,8 +54,6 @@ jobs:
           APP_FILE: ${{ runner.temp }}/loopdhands-2.6-staging.apk
           CLOUD_LOG: ${{ runner.temp }}/maestro-cloud.log
         run: |
-          echo "started_at=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> "$GITHUB_OUTPUT"
-
           for name in MAESTRO_API_KEY MAESTRO_PROJECT_ID MAILSLURP_API_KEY EMAIL PASSWORD; do
             if [[ -z "${!name:-}" ]]; then
               printf 'Missing required GitHub Actions secret for %s\n' "$name" >&2
@@ -84,7 +82,6 @@ jobs:
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
           CLOUD_OUTCOME: ${{ steps.cloud-run.outcome }}
-          RUN_STARTED_AT: ${{ steps.cloud-run.outputs.started_at }}
           CLOUD_LOG: ${{ runner.temp }}/maestro-cloud.log
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}
         run: |
@@ -99,23 +96,34 @@ jobs:
           import re
 
           outcome = os.environ.get("CLOUD_OUTCOME", "skipped")
-          passed = outcome == "success"
-          status = "PASS" if passed else "FAIL"
+          flow_results = []
           console_url = ""
           try:
               with open(os.environ["CLOUD_LOG"], encoding="utf-8", errors="replace") as log:
-                  match = re.search(r"https://app\.maestro\.dev/\S+", log.read())
+                  cloud_log = log.read()
+                  flow_results = re.findall(
+                      r"^\[(?:Passed|Failed)\]\s+.+\s+\([^)]+\)(?:\s+\(.*\))?$",
+                      cloud_log,
+                      flags=re.MULTILINE,
+                  )
+                  match = re.search(r"https://app\.maestro\.dev/\S+", cloud_log)
                   if match:
                       console_url = match.group(0).rstrip(".,)")
           except FileNotFoundError:
               pass
 
-          lines = [
-              f"Loopdhands Maestro Cloud run started: {os.environ.get('RUN_STARTED_AT', 'unknown')}",
-              f"{status} | Loopdhands Maestro Cloud",
-              f"Summary: {1 if passed else 0} passed, {0 if passed else 1} failed",
-              f"GitHub Actions: {os.environ['RUN_URL']}",
-          ]
+          if flow_results:
+              passed = sum(line.startswith("[Passed] ") for line in flow_results)
+              failed = sum(line.startswith("[Failed] ") for line in flow_results)
+          else:
+              passed = int(outcome == "success")
+              failed = 1 - passed
+
+          status = "PASS" if outcome == "success" and failed == 0 else "FAIL"
+          lines = [f"{status} | Loopdhands"]
+          lines.extend(flow_results)
+          lines.extend(["", f"Summary: {passed} passed, {failed} failed"])
+          lines.append(f"GitHub Actions: {os.environ['RUN_URL']}")
           if console_url:
               lines.append(f"Maestro Cloud: {console_url}")
 
