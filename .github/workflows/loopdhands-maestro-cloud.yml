@@ -1,0 +1,71 @@
+name: Loopdhands Maestro Cloud
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: GitHub Release tag containing loopdhands-2.6-staging.apk
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  maestro-cloud:
+    name: Run Loopdhands on Maestro Cloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out flows
+        uses: actions/checkout@v4
+
+      - name: Download APK from private GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "loopdhands-2.6-staging.apk" \
+            --dir "$RUNNER_TEMP"
+          test -s "$RUNNER_TEMP/loopdhands-2.6-staging.apk"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION=2.12.0 bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Run flows on Maestro Cloud
+        env:
+          MAESTRO_API_KEY: ${{ secrets.MAESTRO_API_KEY }}
+          MAESTRO_PROJECT_ID: ${{ secrets.LOOPDHANDS_MAESTRO_PROJECT_ID }}
+          MAILSLURP_API_KEY: ${{ secrets.MAILSLURP_API_KEY }}
+          EMAIL: ${{ secrets.LOOPDHANDS_EMAIL }}
+          PASSWORD: ${{ secrets.LOOPDHANDS_PASSWORD }}
+          MAILSLURP_INBOX_ID: ${{ secrets.MAILSLURP_INBOX_ID }}
+          APP_FILE: ${{ runner.temp }}/loopdhands-2.6-staging.apk
+        run: |
+          for name in MAESTRO_API_KEY MAESTRO_PROJECT_ID MAILSLURP_API_KEY EMAIL PASSWORD; do
+            if [[ -z "${!name:-}" ]]; then
+              printf 'Missing required GitHub Actions secret for %s\n' "$name" >&2
+              exit 1
+            fi
+          done
+
+          maestro cloud \
+            --api-key "$MAESTRO_API_KEY" \
+            --project-id "$MAESTRO_PROJECT_ID" \
+            --app-file "$APP_FILE" \
+            --flows Loopdhands/flows \
+            --exclude-tags login \
+            --name "Loopdhands-${GITHUB_RUN_NUMBER}" \
+            -e EMAIL="$EMAIL" \
+            -e PASSWORD="$PASSWORD" \
+            -e MAILSLURP_API_KEY="$MAILSLURP_API_KEY" \
+            -e MAILSLURP_INBOX_ID="${MAILSLURP_INBOX_ID:-}"

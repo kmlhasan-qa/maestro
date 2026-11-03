@@ -5,8 +5,18 @@ set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 TARGET="${1:-all}"
 
+if [[ "$TARGET" == "cloud" ]]; then
+  shift
+  CLOUD_TARGET="${1:-all}"
+  if (($# > 1)); then
+    echo "Usage: $0 cloud [all|flows/<flow>.yaml]" >&2
+    exit 2
+  fi
+  exec "$DIR/run-cloud.sh" "$CLOUD_TARGET"
+fi
+
 if (($# > 1)); then
-  echo "Usage: $0 [all|flows/<flow>.yaml]" >&2
+  echo "Usage: $0 [all|flows/<flow>.yaml] | cloud [all|flows/<flow>.yaml]" >&2
   exit 2
 fi
 

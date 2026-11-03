@@ -12,7 +12,7 @@ fi
 PROJECT="loopdhands"
 if (($# > 0)); then
   case "$1" in
-    all|links|check-all-links|check_all_links|flows/*|/*)
+    all|cloud|links|check-all-links|check_all_links|flows/*|/*)
       ;;
     *)
       PROJECT="$1"
@@ -22,11 +22,6 @@ if (($# > 0)); then
 fi
 
 TARGET="${1:-all}"
-
-if (($# > 1)); then
-  echo "Usage: $0 [project] [all|links|flows/<flow>.yaml]" >&2
-  exit 2
-fi
 
 case "$PROJECT" in
   loopdhands|Loopdhands)
@@ -58,7 +53,7 @@ trap 'rm -f "$REPORT_FILE"' EXIT
 RUN_STARTED="$PROJECT_NAME run started: $(date '+%Y-%m-%d %H:%M:%S')"
 printf '%s\n' "$RUN_STARTED"
 set +e
-"$PROJECT_DIR/run.sh" "$TARGET" 2>&1 | tee "$REPORT_FILE"
+"$PROJECT_DIR/run.sh" "$@" 2>&1 | tee "$REPORT_FILE"
 PROJECT_STATUS="${PIPESTATUS[0]}"
 set -e
 
